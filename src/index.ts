@@ -1,15 +1,32 @@
-import express from "express";
-import userRoutes from "./routes/userRoutes";
+import express, { Express } from 'express';
+import { PrismaClient } from '@prisma/client';
+import 'dotenv/config';
 
-const app = express();
+const app: Express = express();
+const prisma = new PrismaClient();
+
+// Middleware example
 app.use(express.json());
 
-// API routes
-app.use("/api/users", userRoutes);
-
-app.get("/", (req, res) => {
-  res.send("IPTV Node.js + TS + Prisma 6 CRUD is working!");
+// Example route
+app.get('/', (req, res) => {
+  res.send('Hello World 🌍');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+// Connect to database and start server
+async function main() {
+  try {
+    await prisma.$connect();
+    console.log("Database connected ✅");
+
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("DB connection error:", err);
+    process.exit(1);
+  }
+}
+
+main();
